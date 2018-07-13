@@ -1,0 +1,5 @@
+begin
+    mov $1 %op1
+    mov $2 %op2
+    add %op1 %op2
+    ret

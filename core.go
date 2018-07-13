@@ -3,6 +3,8 @@ package klvm
 import (
 	"bufio"
 	"os"
+	"strconv"
+	"strings"
 )
 
 const (
@@ -53,7 +55,7 @@ func RegInit() Register {
 }
 
 func MemoryInit() Memory {
-	return Memory{0, 0, make([]int, 1024), make([]int, 1024), make([]int, 1024), make([]int, 1024)}
+	return Memory{0, 0, make([]int, 0, 1024), make([]int, 0, 1024), make([]int, 0, 1024), make([]int, 0, 1024)}
 }
 
 func MachineInit() Machine {
@@ -64,13 +66,26 @@ func MachineInit() Machine {
 }
 
 func (m *Machine) Load(fileName string) {
-	f, err := os.Open(fileName)
-	defer f.Close()
-	if err == nil {
-		r := bufio.NewReader(f)
-
-	} else {
+	file, err := os.Open(fileName)
+	defer file.Close()
+	if err != nil {
 		panic(err)
 	}
+	r := bufio.NewReader(file)
+	canRead := true
+	for canRead {
+		line, _, e := r.ReadLine()
+		canRead = (e == nil)
+		tokens := strings.Split(string(line), " ")
+		val, e := strconv.Atoi(string(tokens[0]))
+		m.M.code = append(m.M.code, val)
+		for i := 1; i < len(tokens); i++ {
+			val, _ = strconv.Atoi(string(tokens[0]))
+			m.M.staticData = append(m.M.staticData, val)
+		}
+	}
+}
+
+func (m *Machine) Run() {
 
 }
